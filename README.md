@@ -179,3 +179,28 @@ Matladi Maxwell Moagi (Lord-Xido)
 ## License
 
 MIT License - See LICENSE file
+
+
+## Native C++ Runtime
+
+A second, independently executable C++17 implementation now lives under
+`cpp/`. It mirrors the geometric execution chain while adding explicit
+mathematical invariants and CI verification.
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
+./build/dm3d_verify
+```
+
+The native implementation uses periodic `T^3` geometry and proves the inner
+fixed-reference fold contractive for its configured coefficients. The current
+Python geometry layer uses replicate boundary padding, so exact cross-language
+numerical equivalence is not claimed until boundary semantics are aligned.
+
+The conceptual million-cubed substrate and
+`1,000,000^1,000,000 = 10^6,000,000` operation space are logical/sparse
+address spaces, not claims of dense allocation or physical execution rate.
+
+See [cpp/README.md](cpp/README.md) for the mathematical verification contract.

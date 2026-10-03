@@ -1,0 +1,56 @@
+name: C++ DM3D Native Verification
+
+on:
+  push:
+    branches:
+      - main
+      - 'codex/**'
+    paths:
+      - 'cpp/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/cpp-native-verify.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'cpp/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/cpp-native-verify.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  native-verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select compiler
+        shell: bash
+        run: |
+          if [ "${{ matrix.compiler }}" = "clang" ]; then
+            echo "CC=clang" >> "$GITHUB_ENV"
+            echo "CXX=clang++" >> "$GITHUB_ENV"
+          else
+            echo "CC=gcc" >> "$GITHUB_ENV"
+            echo "CXX=g++" >> "$GITHUB_ENV"
+          fi
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --parallel 2
+
+      - name: Verify end to end
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Run verifier directly
+        run: ./build/dm3d_verify
