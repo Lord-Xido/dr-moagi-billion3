@@ -1,0 +1,34 @@
+name: DrMoagi3D Windows x64
+on:
+  push:
+    branches: [main, 'codex/**']
+    paths: ['windows-runtime/**', '.github/workflows/drmoagi3d-windows.yml']
+  pull_request:
+    paths: ['windows-runtime/**', '.github/workflows/drmoagi3d-windows.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows-runtime:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure x64
+        run: cmake -S windows-runtime -B build-windows -A x64
+      - name: Build Release
+        run: cmake --build build-windows --config Release
+      - name: Tests
+        run: ctest --test-dir build-windows -C Release --output-on-failure
+      - name: CPU end-to-end diagnostics
+        shell: pwsh
+        run: |
+          & .\build-windows\Release\DrMoagi3D.exe --demo --cpu --tiles 8 --file ci_1GB.vmem | Tee-Object verification.log
+          if ($LASTEXITCODE -ne 0) { throw 'End-to-end verification failed' }
+      - name: Upload executable and diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: DrMoagi3D-Windows-x64
+          path: |
+            build-windows/Release/DrMoagi3D.exe
+            verification.log
+            windows-runtime/README.md
