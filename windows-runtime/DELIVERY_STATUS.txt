@@ -1,0 +1,2 @@
+PASS backing length, header, index, all 262144 seed voxels, unpopulated zero tile
+C++ compilation and runtime verification NOT RUN: no Windows C++ toolchain found.
