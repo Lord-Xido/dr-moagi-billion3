@@ -1,0 +1,40 @@
+name: JARVIS-X Gigacube Verification
+
+on:
+  push:
+    branches:
+      - main
+      - 'codex/**'
+    paths:
+      - 'gigacube/**'
+      - '.github/workflows/gigacube-verify.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'gigacube/**'
+      - '.github/workflows/gigacube-verify.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  reversible-lattice:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.12']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install gigacube requirements
+        run: python -m pip install -r gigacube/requirements.txt
+      - name: Run 3D lattice self-tests
+        run: python gigacube/jarvisx_gigacube.py selftest
+      - name: Run end-to-end CLI test
+        run: python gigacube/tests/test_cli.py

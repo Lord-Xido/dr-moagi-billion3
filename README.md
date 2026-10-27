@@ -204,3 +204,17 @@ The conceptual million-cubed substrate and
 address spaces, not claims of dense allocation or physical execution rate.
 
 See [cpp/README.md](cpp/README.md) for the mathematical verification contract.
+
+## JARVIS-X Gigacube: Reversible 3D Bit-Lattice Module
+
+An independently executable, disk-backed 3D Boolean computation module is provided in [`gigacube/`](gigacube/README.md).
+
+It models a logical 3D address space with **8,000,000,000 bit coordinates per axis** (99-bit Morton addresses), while allocating **only finite 3D bricks** in SQLite. Each complete cycle applies a reversible, two-phase checkerboard XOR/AND transform and records a transactionally committed state digest; it can reconstruct the original payload using inverse iterations and SHA-256 verification.
+
+```bash
+python -m pip install -r gigacube/requirements.txt
+python gigacube/jarvisx_gigacube.py selftest
+python gigacube/tests/test_cli.py
+```
+
+**Boundary:** this module is a sparse logical bit-lattice computation, not a physical 64-ronnabyte device, quantum computer, or guaranteed-performance accelerator. Its exact reversal is separate from the neural substrate's proposed contraction/fixed-point behavior. The existing core, VM, UI, and C++ verifier remain unchanged.
